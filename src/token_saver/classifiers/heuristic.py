@@ -260,18 +260,21 @@ class HeuristicClassifier:
 
     @staticmethod
     def _difficulty_center(task_type: str, hits: dict[str, int], words: int, code: bool) -> float:
+        # Length is the strongest cheap signal: people write more when they ask for more.
         if words <= 8:
-            center = 0.6
-        elif words <= 40:
-            center = 1.3
-        elif words <= 150:
-            center = 2.0
+            center = 0.3
+        elif words <= 25:
+            center = 1.0
+        elif words <= 50:
+            center = 1.8
+        elif words <= 100:
+            center = 2.4
         else:
-            center = 2.8
-        center += min(1.5, 0.5 * hits["analysis"])
+            center = 3.0
+        center += min(1.5, 0.6 * hits["analysis"])
         if hits["agentic"]:
             center += 1.0
-        if code and words > 40:
+        if code or (hits["coding"] and words > 15):
             center += 0.5
         if task_type == "chitchat":
             center = min(center, 0.3)
