@@ -1,0 +1,79 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "token-saver"
+version = "0.1.0"
+description = "Route every prompt to the cheapest Claude model and effort level that can handle it, decided by Jev in a few hundred milliseconds."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "minBuild" }]
+keywords = ["claude", "anthropic", "jev", "typesafe", "llm-router", "model-routing", "cost-optimization"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Libraries",
+  "Typing :: Typed",
+]
+dependencies = [
+  "typesafe-sdk>=0.7.5,<0.8",
+  "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+claude = ["anthropic>=2.2,<3"]
+dev = [
+  "anthropic>=2.2,<3",
+  "mypy>=1.11",
+  "pytest>=8",
+  "ruff>=0.6",
+  "types-PyYAML",
+]
+
+[project.scripts]
+token-saver = "token_saver.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/minBuild/token-saver"
+Issues = "https://github.com/minBuild/token-saver/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/token_saver"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/", "tests/", "bench/", "README.md", "LICENSE"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF", "N", "W"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["token_saver"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_unreachable = true
+mypy_path = "src"
+packages = ["token_saver"]
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
