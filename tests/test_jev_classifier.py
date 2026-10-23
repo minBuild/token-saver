@@ -85,6 +85,12 @@ def test_an_unexpected_answer_set_is_rejected():
         JevClassifier(make_client(handler)).classify("hello there")
 
 
+def test_a_missing_api_key_is_reported_as_a_classifier_error(monkeypatch):
+    monkeypatch.delenv("TYPESAFE_API_KEY", raising=False)
+    with pytest.raises(ClassifierError, match="TYPESAFE_API_KEY"):
+        JevClassifier()
+
+
 def test_empty_prompts_are_rejected_before_any_request():
     def handler(request: httpx2.Request) -> httpx2.Response:
         raise AssertionError("no request expected")

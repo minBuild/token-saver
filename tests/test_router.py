@@ -117,6 +117,8 @@ def test_from_env_can_force_jev_or_fixtures(monkeypatch, tmp_path):
 
     with pytest.raises(ValueError, match="needs a fixtures file"):
         Router.from_env(classifier="fixture")
+    with pytest.raises(ValueError, match="recording needs a fixtures file"):
+        Router.from_env(classifier="jev", record=True)
     with pytest.raises(ValueError, match="classifier must be one of"):
         Router.from_env(classifier="oracle")
 

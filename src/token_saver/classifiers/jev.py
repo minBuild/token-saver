@@ -44,9 +44,12 @@ class JevClassifier:
         self.model = model
         self.store = store
         self._owns_client = client is None
-        self._client = (
-            client if client is not None else TypeSafeClient(model=model, timeout=timeout)
-        )
+        if client is None:
+            try:
+                client = TypeSafeClient(model=model, timeout=timeout)
+            except TypeSafeError as exc:  # typically: no TYPESAFE_API_KEY in the environment
+                raise ClassifierError(str(exc)) from exc
+        self._client = client
 
     def classify(self, prompt: str) -> Signals:
         if not prompt.strip():

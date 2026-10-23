@@ -1,0 +1,50 @@
+{"id": "trivial-01", "lang": "en", "expected": "trivial", "prompt": "hi"}
+{"id": "trivial-02", "lang": "en", "expected": "trivial", "prompt": "thanks, that worked!"}
+{"id": "trivial-03", "lang": "ko", "expected": "trivial", "prompt": "안녕! 오늘도 잘 부탁해"}
+{"id": "trivial-04", "lang": "en", "expected": "trivial", "prompt": "What is the capital of Australia?"}
+{"id": "trivial-05", "lang": "ko", "expected": "trivial", "prompt": "서울의 인구는 대략 몇 명이야?"}
+{"id": "trivial-06", "lang": "en", "expected": "trivial", "prompt": "Is 17 a prime number?"}
+{"id": "trivial-07", "lang": "en", "expected": "trivial", "prompt": "What does HTTP stand for?"}
+{"id": "trivial-08", "lang": "ko", "expected": "trivial", "prompt": "고마워, 나중에 또 물어볼게"}
+{"id": "trivial-09", "lang": "en", "expected": "trivial", "prompt": "Good morning! How are you today?"}
+{"id": "trivial-10", "lang": "ko", "expected": "trivial", "prompt": "파이썬에서 리스트 길이 구하는 함수 이름이 뭐야?"}
+{"id": "simple-01", "lang": "en", "expected": "simple", "prompt": "Translate to Korean: The meeting has been moved to 3 pm on Thursday."}
+{"id": "simple-02", "lang": "ko", "expected": "simple", "prompt": "이 문장을 영어로 번역해줘: 회의는 목요일 오후 3시로 변경되었습니다."}
+{"id": "simple-03", "lang": "en", "expected": "simple", "prompt": "Write a Python one-liner that reverses a string."}
+{"id": "simple-04", "lang": "en", "expected": "simple", "prompt": "Fix the grammar: 'She don't like going to school on mondays.'"}
+{"id": "simple-05", "lang": "ko", "expected": "simple", "prompt": "다음 문장을 더 정중하게 다듬어줘: '내일까지 보내주세요.'"}
+{"id": "simple-06", "lang": "en", "expected": "simple", "prompt": "Give me a regex that matches a 5-digit US zip code."}
+{"id": "simple-07", "lang": "ko", "expected": "simple", "prompt": "SQL로 users 테이블에서 가입일이 2026년인 사용자 수를 세는 쿼리 작성해줘"}
+{"id": "simple-08", "lang": "en", "expected": "simple", "prompt": "Summarize this in one sentence: Our Q3 revenue grew 12% year over year, driven mainly by subscription renewals, while hardware sales were flat."}
+{"id": "simple-09", "lang": "en", "expected": "simple", "prompt": "Convert 72 degrees Fahrenheit to Celsius and show the formula."}
+{"id": "simple-10", "lang": "ko", "expected": "simple", "prompt": "JSON 문자열을 파이썬 dict로 바꾸는 코드 보여줘"}
+{"id": "moderate-01", "lang": "en", "expected": "moderate", "prompt": "Write a Python function that parses an ISO-8601 duration string like P3DT4H5M into a timedelta, with tests for the edge cases."}
+{"id": "moderate-02", "lang": "ko", "expected": "moderate", "prompt": "FastAPI에서 JWT 인증 미들웨어를 구현하고, 만료된 토큰과 서명이 틀린 토큰을 각각 다르게 처리하는 예제 코드를 작성해줘"}
+{"id": "moderate-03", "lang": "en", "expected": "moderate", "prompt": "Explain the difference between optimistic and pessimistic locking, and tell me which one fits an inventory service with rare conflicts."}
+{"id": "moderate-04", "lang": "en", "expected": "moderate", "prompt": "I have a pandas DataFrame with daily sales per store. Give me code to compute a 7-day rolling average per store and flag days that are 2 standard deviations below it."}
+{"id": "moderate-05", "lang": "ko", "expected": "moderate", "prompt": "리액트에서 무한 스크롤 목록을 만들 때 IntersectionObserver와 scroll 이벤트 중 어느 쪽이 나은지 이유와 함께 설명하고 예제 코드를 줘"}
+{"id": "moderate-06", "lang": "en", "expected": "moderate", "prompt": "Review this function for bugs and suggest improvements:\n```python\ndef merge(a, b):\n    result = a\n    for k in b:\n        result[k] = b[k]\n    return result\n```"}
+{"id": "moderate-07", "lang": "en", "expected": "moderate", "prompt": "Plan a 5-day itinerary for Kyoto in November for two people who like food and temples, with a rough daily budget."}
+{"id": "moderate-08", "lang": "ko", "expected": "moderate", "prompt": "매달 30만 원씩 연 5% 복리로 10년 투자하면 얼마가 되는지 계산 과정과 함께 알려줘"}
+{"id": "moderate-09", "lang": "en", "expected": "moderate", "prompt": "Write a bash script that rotates log files older than 7 days, compresses them, and deletes archives older than 90 days. Handle filenames with spaces."}
+{"id": "moderate-10", "lang": "ko", "expected": "moderate", "prompt": "Docker Compose로 Postgres, Redis, 그리고 Node API 서버를 띄우는 설정을 작성하고, 헬스체크와 재시작 정책도 넣어줘"}
+{"id": "hard-01", "lang": "en", "expected": "hard", "prompt": "Our Postgres primary hits 100% CPU every day at 09:00 for 20 minutes. pg_stat_statements shows a reporting query doing a nested loop over 40M rows. Walk me through diagnosing and fixing it without taking the database down, including index and query rewrite options and their trade-offs."}
+{"id": "hard-02", "lang": "ko", "expected": "hard", "prompt": "쿠버네티스에서 특정 Pod만 간헐적으로 OOMKilled 되는데 메모리 limit은 충분해 보여. JVM 컨테이너 환경에서 원인을 어떻게 좁혀가야 하는지 단계별로 설명하고, 흔한 원인 3가지와 각각의 해결책을 비교해줘"}
+{"id": "hard-03", "lang": "en", "expected": "hard", "prompt": "Design a rate limiter for a public API serving 50k requests per second across 12 regions. Compare token bucket vs sliding window, decide where state lives, and explain how you keep limits accurate during a region failover."}
+{"id": "hard-04", "lang": "en", "expected": "hard", "prompt": "Prove that the sum of the first n odd numbers is n^2, then explain how the same idea generalizes to sums of consecutive odd numbers starting from any odd number."}
+{"id": "hard-05", "lang": "ko", "expected": "hard", "prompt": "이벤트 소싱 기반 주문 시스템에서 스냅샷 전략을 어떻게 설계할지 설명해줘. 스냅샷 주기, 스키마 변경 시 리플레이 호환성, 그리고 GDPR 삭제 요청 처리 방법까지 포함해서 장단점을 비교해줘"}
+{"id": "hard-06", "lang": "en", "expected": "hard", "prompt": "Here's a race condition: two workers both read a job row with status='pending', both update it to 'running', and both process it. Propose three fixes (database-level, application-level, queue-level), with the failure modes of each under network partitions."}
+{"id": "hard-07", "lang": "en", "expected": "hard", "prompt": "Refactor a 3,000-line Django view module into a service layer without changing behavior. Describe the sequence of safe steps, how to keep tests green at every step, and how to detect behavior drift."}
+{"id": "hard-08", "lang": "ko", "expected": "hard", "prompt": "대규모 Next.js 앱의 첫 화면 LCP가 4.5초인데, 서버 컴포넌트 전환, 이미지 최적화, 번들 분할 중 어떤 순서로 적용해야 효과가 크고 리스크가 작은지 근거와 함께 우선순위를 정해줘"}
+{"id": "hard-09", "lang": "en", "expected": "hard", "prompt": "Given a stream of 1 billion URLs, design an approach to find the 100 most frequent domains using at most 1 GB of memory. Analyze the error bounds of the approximate method you choose."}
+{"id": "hard-10", "lang": "en", "expected": "hard", "prompt": "Explain why TCP incast collapse happens in data center networks and evaluate three mitigations, including what each one does to tail latency."}
+{"id": "expert-01", "lang": "en", "expected": "expert", "prompt": "Design a globally distributed, strongly consistent key-value store that survives the loss of any single region without data loss, targeting sub-50ms p99 writes for users within a region. Specify the consensus protocol, the failure detector, how you handle clock skew, and how you would prove linearizability of the implementation."}
+{"id": "expert-02", "lang": "ko", "expected": "expert", "prompt": "자체 토큰 단위 LLM 추론 서버를 설계해줘. continuous batching, paged KV cache, speculative decoding을 어떻게 결합하고, 8장의 H100에서 70B 모델 기준으로 처리량과 지연의 트레이드오프를 어떻게 측정하고 최적화할지 수식과 함께 설명해줘"}
+{"id": "expert-03", "lang": "en", "expected": "expert", "prompt": "Audit this ASN.1 length-decoding routine for memory-safety bugs, explain the exploitability of each one, and write a patched version plus a libFuzzer harness:\n```c\nint read_len(const uint8_t *p, size_t n, size_t *out) {\n    size_t len = p[0];\n    if (len & 0x80) {\n        int k = len & 0x7f;\n        len = 0;\n        for (int i = 0; i < k; i++) len = (len << 8) | p[1 + i];\n        *out = len;\n        return 1 + k;\n    }\n    *out = len;\n    return 1;\n}\n```"}
+{"id": "expert-04", "lang": "en", "expected": "expert", "prompt": "Prove or disprove: every connected graph with n vertices and n edges has exactly one cycle. Then extend the argument to characterize connected graphs with n+1 edges, with full rigor."}
+{"id": "expert-05", "lang": "ko", "expected": "expert", "prompt": "국내 카드 결제 시스템을 PCI DSS 4.0 요건에 맞춰 재설계해야 해. 토큰화 범위, HSM 키 관리, 네트워크 세분화, 로그 보존 정책을 포함한 아키텍처를 제안하고, 각 결정의 감사 리스크와 비용을 평가해줘"}
+{"id": "expert-06", "lang": "en", "expected": "expert", "prompt": "Write a formally verified (Lean 4 or Coq) implementation of binary search over a sorted array, including the termination proof and the specification that the result index is correct, and explain each proof obligation."}
+{"id": "expert-07", "lang": "en", "expected": "expert", "prompt": "Derive the optimal bidding strategy for a repeated second-price auction with budget constraints and partially observed competitor bids, and show under what conditions pacing with a dual multiplier converges."}
+{"id": "expert-08", "lang": "ko", "expected": "expert", "prompt": "지금 운영 중인 모놀리식 결제 서비스를 무중단으로 이벤트 기반 마이크로서비스로 전환하는 18개월 로드맵을 세워줘. strangler fig 적용 순서, 데이터 소유권 분리, 이중 쓰기 기간의 정합성 검증, 롤백 전략, 조직 구조 변경까지 포함해서 리스크 매트릭스로 정리해줘"}
+{"id": "expert-09", "lang": "en", "expected": "expert", "prompt": "Our ML model's offline AUC improved from 0.81 to 0.86 but online conversion dropped 3%. Design the investigation: leakage checks, interleaving experiments, causal analysis of the feedback loop, and a decision framework for when to roll back, with statistical power calculations."}
+{"id": "expert-10", "lang": "en", "expected": "expert", "prompt": "Implement a lock-free multi-producer multi-consumer queue in C++20 with bounded memory, explain the memory ordering of every atomic operation, and argue that it is linearizable and free of the ABA problem."}

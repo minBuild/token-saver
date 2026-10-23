@@ -77,7 +77,9 @@ class Router:
             if classifier == "heuristic":
                 log.info("%s is not set; routing with the offline heuristic", API_KEY_ENV)
 
-        store = FixtureStore.load(fixtures) if fixtures is not None and record else None
+        if record and fixtures is None:
+            raise ValueError("recording needs a fixtures file")
+        store = FixtureStore.load(fixtures) if record and fixtures is not None else None
         if classifier == "jev":
             chosen: Classifier | None = JevClassifier(model=model, timeout=timeout, store=store)
         elif classifier == "fixture":
