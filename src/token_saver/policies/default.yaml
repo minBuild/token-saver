@@ -1,0 +1,53 @@
+# token-saver routing policy (default)
+#
+# Tiers go from cheapest to most capable. Jev scores difficulty on five levels (0..4); level i
+# maps to the i-th name in `difficulty.levels`. The rules then move the pick up or down the
+# ladder. Prices (USD per million input/output tokens) are noted for orientation only.
+
+version: 1
+
+tiers:
+  - name: trivial
+    model: claude-haiku-5-5        # $0.10 / $0.50
+    effort: high
+    note: one-line answers, small talk, lookups
+  - name: simple
+    model: claude-sonnet-5-5       # $2 / $10
+    effort: high
+    note: single-step work, short rewrites, small snippets
+  - name: moderate
+    model: claude-sonnet-5-5
+    effort: xhigh
+    note: a few steps of reasoning, medium code with design choices
+  - name: hard
+    model: claude-opus-5-5         # $4 / $20
+    effort: xhigh
+    note: multi-step reasoning, cross-component debugging, real trade-offs
+  - name: expert
+    model: claude-fable-5-1        # $10 / $50
+    effort: xhigh
+    note: research-level depth, large designs, correctness that is costly to get wrong
+
+difficulty:
+  levels: [trivial, simple, moderate, hard, expert]
+
+rules:
+  # Jev is unsure how hard this is: one tier up is cheaper than a wrong answer.
+  low_confidence:
+    below: 0.35
+    escalate_by: 1
+
+  # A careful expert would need several steps of thought: never go below `hard`.
+  deep_reasoning:
+    above: 0.7
+    min_tier: hard
+
+  # Task-type bounds, applied only when the classifier is reasonably sure about the task type.
+  task_type_min_confidence: 0.5
+  floors:
+    coding: simple
+    analysis: moderate
+    agentic: hard
+  ceilings:
+    chitchat: trivial
+    factual: moderate

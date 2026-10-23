@@ -8,7 +8,7 @@ from typing import Any
 
 from typesafe_sdk import SystemOneResponse
 
-from token_saver.signals import DIFFICULTY_LEVELS, TASK_TYPES
+from token_saver.signals import DIFFICULTY_LEVELS, TASK_TYPES, Signals
 
 
 def make_raw_response(
@@ -67,3 +67,35 @@ def parse_raw_response(raw: dict[str, Any]) -> SystemOneResponse:
 
 def make_response(**kwargs: Any) -> SystemOneResponse:
     return parse_raw_response(make_raw_response(**kwargs))
+
+
+def make_signals(
+    *,
+    task_type: str = "coding",
+    task_type_confidence: float = 0.8,
+    difficulty: float = 2.0,
+    difficulty_confidence: float = 0.8,
+    deep_reasoning: float = 0.3,
+    sensitive: float = 0.0,
+    source: str = "test",
+    fallback_reason: str | None = None,
+) -> Signals:
+    """Signals with explicit numbers, for policy tests that do not care about probabilities."""
+    others = [name for name in TASK_TYPES if name != task_type]
+    task_probabilities = {task_type: 0.8, **{name: 0.2 / len(others) for name in others}}
+    level = max(0, min(len(DIFFICULTY_LEVELS) - 1, int(difficulty + 0.5)))
+    difficulty_probabilities = tuple(
+        1.0 if i == level else 0.0 for i in range(len(DIFFICULTY_LEVELS))
+    )
+    return Signals(
+        task_type=task_type,
+        task_type_confidence=task_type_confidence,
+        task_type_probabilities=task_probabilities,
+        difficulty=difficulty,
+        difficulty_confidence=difficulty_confidence,
+        difficulty_probabilities=difficulty_probabilities,
+        deep_reasoning=deep_reasoning,
+        sensitive=sensitive,
+        source=source,
+        fallback_reason=fallback_reason,
+    )
