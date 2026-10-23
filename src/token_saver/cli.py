@@ -1,4 +1,4 @@
-"""The ``token-saver`` command line: route one prompt, benchmark a prompt set, show the policy."""
+"""The ``token-saver`` command line: route, run on Claude, benchmark, and show the policy."""
 
 from __future__ import annotations
 
@@ -22,6 +22,7 @@ from token_saver.bench import (
 )
 from token_saver.classifiers import ClassifierError
 from token_saver.classifiers.jev import DEFAULT_TIMEOUT_SECONDS
+from token_saver.executor import DEFAULT_MAX_TOKENS, ClaudeExecutor, ExecutorError, RunResult
 from token_saver.policy import EFFORTS, Decision, Effort, Policy, PolicyError
 from token_saver.pricing import UnknownModelError
 from token_saver.router import CLASSIFIER_CHOICES, Router
@@ -63,6 +64,21 @@ def build_parser() -> argparse.ArgumentParser:
     route = subparsers.add_parser("route", parents=[common], help="decide model and effort")
     route.add_argument("prompt", help="the prompt, or - to read it from stdin")
 
+    run = subparsers.add_parser(
+        "run", parents=[common], help="route, then ask Claude with that model and effort"
+    )
+    run.add_argument("prompt", help="the prompt, or - to read it from stdin")
+    run.add_argument("--max-tokens", type=int, default=DEFAULT_MAX_TOKENS)
+    run.add_argument("--system", help="system prompt for Claude")
+    run.add_argument(
+        "--no-stream", action="store_true", help="print the answer only once it is complete"
+    )
+    run.add_argument(
+        "--no-fallbacks",
+        action="store_true",
+        help="do not let the API retry a refused request on a substitute model",
+    )
+
     bench = subparsers.add_parser("bench", parents=[common], help="score a labelled prompt set")
     bench.add_argument("--dataset", type=Path, default=DEFAULT_DATASET, help="JSON Lines file")
     bench.add_argument("--baseline-model", default=DEFAULT_BASELINE_MODEL)
@@ -93,10 +109,19 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         if args.command == "route":
             return _route(args)
+        if args.command == "run":
+            return _run(args)
         if args.command == "bench":
             return _bench(args)
         return _policy(args)
-    except (ClassifierError, PolicyError, UnknownModelError, ValueError, OSError) as exc:
+    except (
+        ClassifierError,
+        ExecutorError,
+        PolicyError,
+        UnknownModelError,
+        ValueError,
+        OSError,
+    ) as exc:
         print(f"token-saver: {exc}", file=sys.stderr)
         return 1
 
@@ -117,10 +142,15 @@ def _build_router(args: argparse.Namespace) -> Router:
     )
 
 
-def _route(args: argparse.Namespace) -> int:
-    prompt = sys.stdin.read() if args.prompt == "-" else args.prompt
+def _read_prompt(argument: str) -> str:
+    prompt = sys.stdin.read() if argument == "-" else argument
     if not prompt.strip():
         raise ValueError("prompt is empty")
+    return prompt
+
+
+def _route(args: argparse.Namespace) -> int:
+    prompt = _read_prompt(args.prompt)
     with _build_router(args) as router:
         decision = router.route(prompt)
     if args.json:
@@ -128,6 +158,37 @@ def _route(args: argparse.Namespace) -> int:
     else:
         print(format_decision(decision))
     return 0
+
+
+def _run(args: argparse.Namespace) -> int:
+    prompt = _read_prompt(args.prompt)
+    with _build_router(args) as router:
+        decision = router.route(prompt)
+    executor = ClaudeExecutor(
+        max_tokens=args.max_tokens,
+        system=args.system,
+        server_fallbacks=not args.no_fallbacks,
+    )
+    if args.json:
+        result = executor.run(prompt, decision)
+        print(json.dumps(result.to_dict(), ensure_ascii=False, indent=2))
+        return 1 if result.refused else 0
+
+    # The answer goes to stdout; routing and usage notes go to stderr so the answer pipes cleanly.
+    print(
+        f"[token-saver] {decision.model} @ {decision.effort}  "
+        f"(tier: {decision.tier}, classifier: {decision.signals.source})",
+        file=sys.stderr,
+    )
+    streaming = not args.no_stream
+    result = executor.run(prompt, decision, on_text=_echo if streaming else None)
+    print() if streaming else print(result.text)
+    print(format_run_footer(result), file=sys.stderr)
+    return 1 if result.refused else 0
+
+
+def _echo(delta: str) -> None:
+    print(delta, end="", flush=True)
 
 
 def _bench(args: argparse.Namespace) -> int:
@@ -188,6 +249,19 @@ def format_decision(decision: Decision) -> str:
     for index, reason in enumerate(decision.reasons):
         lines.append(f"  {'why' if index == 0 else '   '}         {reason}")
     return "\n".join(lines)
+
+
+def format_run_footer(result: RunResult) -> str:
+    cost = f"${result.cost_usd:.4f}" if result.cost_usd is not None else "n/a"
+    line = (
+        f"[token-saver] answered by {result.model}  in {result.input_tokens} / "
+        f"out {result.output_tokens} tokens  cost {cost}"
+    )
+    if result.model != result.decision.model:
+        line += f"  (server-side fallback from {result.decision.model})"
+    if result.refused:
+        line += "  REFUSED"
+    return line
 
 
 def format_policy(policy: Policy) -> str:

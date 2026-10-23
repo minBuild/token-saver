@@ -104,3 +104,63 @@ def test_usage_errors_exit_with_argparse_code(argv):
     with pytest.raises(SystemExit) as exc:
         main(argv)
     assert exc.value.code == 2
+
+
+class FakeExecutor:
+    """Stands in for ClaudeExecutor: no SDK, no network."""
+
+    refused = False
+
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+
+    def run(self, prompt, decision, *, on_text=None):
+        from token_saver.executor import RunResult
+
+        for delta in ("Hel", "lo"):
+            if on_text is not None:
+                on_text(delta)
+        return RunResult(
+            text="Hello",
+            model=decision.model,
+            stop_reason="refusal" if self.refused else "end_turn",
+            input_tokens=10,
+            output_tokens=5,
+            cache_read_tokens=0,
+            cost_usd=0.00012,
+            decision=decision,
+        )
+
+
+def test_run_streams_the_answer_and_reports_usage_on_stderr(monkeypatch, capsys):
+    monkeypatch.setattr("token_saver.cli.ClaudeExecutor", FakeExecutor)
+    assert main(["run", "hi", "--max-tokens", "512", *HEURISTIC]) == 0
+    captured = capsys.readouterr()
+    assert captured.out == "Hello\n"
+    assert (
+        "[token-saver] claude-haiku-5-5 @ high  (tier: trivial, classifier: heuristic)"
+        in captured.err
+    )
+    assert "answered by claude-haiku-5-5  in 10 / out 5 tokens  cost $0.0001" in captured.err
+
+
+def test_run_can_print_json_and_flags_refusals(monkeypatch, capsys):
+    class Refusing(FakeExecutor):
+        refused = True
+
+    monkeypatch.setattr("token_saver.cli.ClaudeExecutor", Refusing)
+    assert main(["run", "hi", "--json", "--no-fallbacks", *HEURISTIC]) == 1
+    data = json.loads(capsys.readouterr().out)
+    assert data["refused"] is True
+    assert data["decision"]["tier"] == "trivial"
+
+
+def test_run_without_the_anthropic_sdk_or_key_fails_clearly(monkeypatch, capsys):
+    from token_saver.executor import ExecutorError
+
+    def missing(**kwargs):
+        raise ExecutorError("The api_key client option must be set")
+
+    monkeypatch.setattr("token_saver.cli.ClaudeExecutor", missing)
+    assert main(["run", "hi", *HEURISTIC]) == 1
+    assert "api_key" in capsys.readouterr().err
